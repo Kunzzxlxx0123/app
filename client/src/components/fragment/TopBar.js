@@ -15,8 +15,17 @@ import MailIcon from '@material-ui/icons/Mail';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import { Divider, List, ListItem, ListItemIcon, ListItemText, SwipeableDrawer } from '@material-ui/core';
+import TreeView from "@material-ui/lab/TreeView";
+import TreeItem from "@material-ui/lab/TreeItem";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import ChevronRightIcon from "@material-ui/icons/ChevronRight";
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+import ArrowRightIcon from '@material-ui/icons/ArrowRight';
+import SendIcon from '@material-ui/icons/Send';
 import InboxIcon from "@material-ui/icons/MoveToInbox";
 import logo from '../../image/logo.jpg';
+import { useDispatch, useSelector } from 'react-redux';
+import { getTreeCategories } from '../../actions/categories';
 const useStyles = makeStyles((theme) => ({
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
@@ -27,7 +36,6 @@ const useStyles = makeStyles((theme) => ({
     zIndex: theme.zIndex.drawer + 1,
     boxShadow:'0 4px 18px 0px rgb(0 0 0 / 12%), 0 7px 10px -5px rgb(0 0 0 / 15%)',
     backgroundColor: 'black',
-    padding: '0.5%',
   },
   grow: {
     flexGrow: 1,
@@ -93,6 +101,64 @@ const useStyles = makeStyles((theme) => ({
       display: 'none',
     },
   },
+  root: {
+    color: theme.palette.text.secondary,
+    '&:hover > $content': {
+      backgroundColor: theme.palette.action.hover,
+    },
+    '&:focus > $content, &$selected > $content': {
+      backgroundColor: `var(--tree-view-bg-color, ${theme.palette.grey[400]})`,
+      color: 'var(--tree-view-color)',
+    },
+    '&:focus > $content $label, &:hover > $content $label, &$selected > $content $label': {
+      backgroundColor: 'transparent',
+    },
+  },
+  content: {
+    color: theme.palette.text.secondary,
+    paddingRight: theme.spacing(1),
+    fontWeight: theme.typography.fontWeightMedium,
+    '$expanded > &': {
+      fontWeight: theme.typography.fontWeightRegular,
+    },
+    paddingTop: '8px',
+    paddingBottom: '8px',
+  },
+  group: {
+    marginLeft: 0,
+    '& $content': {
+      paddingLeft: theme.spacing(2),
+    },
+  },
+  expanded: {},
+  selected: {
+    color:'#3f51b5',
+    background:'transparent',
+  },
+  label: {
+    fontWeight: 'inherit',
+    color: 'inherit',
+    '&:hover':{
+      color: '#3f51b5'
+    }
+  },
+  labelRoot: {
+    display: 'flex',
+    alignItems: 'center',
+    padding: theme.spacing(0.5, 0),
+    fontSize: '1rem',
+    fontWeight: '400',
+    fontFamily:'"Roboto", "Helvetica", "Arial", sans-serif',
+    letterSpacing:'0.00938em',
+    lineHeight: '1.5',
+  },
+  labelIcon: {
+    marginRight: theme.spacing(1),
+  },
+  labelText: {
+    fontWeight: 'Arial',
+    flexGrow: 1,
+  },
 }));
 
 export default function TopBar() {
@@ -105,10 +171,15 @@ export default function TopBar() {
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
-  useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-  })
+  const dispatch = useDispatch();
 
+  useEffect(() => {
+    dispatch(getTreeCategories());
+    window.addEventListener("scroll", handleScroll);
+  }, [])
+
+  const treeCategories = useSelector((state) => state.categories);
+  console.log(treeCategories);
   const handleScroll = () => {
     if(window.scrollY >= 457){
       setAppBar(`${classes.appBarScroll}`);
@@ -145,31 +216,52 @@ export default function TopBar() {
     setMobileMoreAnchorEl(event.currentTarget);
   };
 
+  const getTreeItemsFromData = treeItems => {
+    return treeItems.map(treeItemData => {
+      let childs = undefined;
+      if (treeItemData.childs && treeItemData.childs.length > 0) {
+        childs = getTreeItemsFromData(treeItemData.childs);
+      }
+      return (
+          
+          <div className={classes.rootItem}>
+            <TreeItem 
+                    key={treeItemData.id}
+                    nodeId={treeItemData.id}
+                    label={<div className={classes.labelRoot}>{treeItemData.name}</div>}
+                    children={childs}
+                    
+                    classes={{
+                      root: classes.root,
+                      content: classes.content,
+                      expanded: classes.expanded,
+                      selected: classes.selected,
+                      group: classes.group,
+                      label:classes.label,
+                    }}
+                  />
+          </div>
+        
+      );
+    });
+  }
+
+  const DataTreeView = ({ treeItems }) => {
+    return (
+      <TreeView
+        defaultCollapseIcon={<ArrowDropDownIcon />}
+        defaultExpandIcon={<ArrowRightIcon />}
+      >
+        <List component="nav">{getTreeItemsFromData(treeItems)}</List>
+      </TreeView>
+    );
+  };
+
   const drawerList = () => (
     <div role="presentation" className={classes.drawer}>
       <img src={logo} height="60" ></img>
       <Divider />
-      <List>
-        {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemIcon>
-              {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-            </ListItemIcon>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
-      </List>
-      <Divider />
-      <List>
-        {["All mail", "Trash", "Spam"].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemIcon>
-              {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-            </ListItemIcon>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
-      </List>
+      <DataTreeView treeItems={treeCategories} />
     </div>
   );
 
