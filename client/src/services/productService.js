@@ -1,7 +1,5 @@
 
 import axios from 'axios';
+import { baseUrl } from '../constants/key.js';
 
-const baseUrl = 'http://localhost:8080/api';
-const url = `${baseUrl}/product`;
-
-export const fetchProducts = () => axios.get(url);
+export const fetchProducts = () => axios.get(`${baseUrl}/api/product`);

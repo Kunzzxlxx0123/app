@@ -17,8 +17,6 @@ const Products = ({ setCurrentId }) => {
     
     const classes = useStyles();
     const products = useSelector((state) => state.products);
-    
-
     return (
         !products.length ? <CircularProgress /> : (
           <Grid container spacing={3}>

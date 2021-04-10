@@ -12,6 +12,9 @@ import com.spring.server.model.Product;
 public interface ProductRepository extends JpaRepository<Product, Long>{
 
 	
-	@Query("SELECT p FROM Product p")
+	@Query("SELECT p.id,p.name,p.price,p.number,p.likeCount,p.creator"
+			+ ",p.created_date,p.modified_date,p.modifitor FROM Product p")
 	Page<Product> getPageProducts(Pageable pageable);
+	
+	
 }
