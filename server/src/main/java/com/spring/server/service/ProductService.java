@@ -17,6 +17,6 @@ public interface ProductService {
 
 	List<Product> findAll();
 
-	Page<Product> getPageProducts(Pageable pageable);
+	List<Product> getPageProducts(Pageable pageable);
 
 }

@@ -12,17 +12,18 @@ const useStyles = makeStyles (theme => ({
     }
 }))
 
-const Products = ({ setCurrentId }) => {
+const Products = () => {
 
     
     const classes = useStyles();
     const products = useSelector((state) => state.products);
+    console.log(products);
     return (
         !products.length ? <CircularProgress /> : (
           <Grid container spacing={3}>
             {products.map((product) => (
-              <Grid className={classes.content} key={product._id} item xs={12} sm={3} md={3} >
-                <ProductItem  product={product} setCurrentId={setCurrentId} />
+              <Grid className={classes.content} key={product.id} item xs={12} sm={3} md={3} >
+                <ProductItem  product={product} />  
               </Grid>
             ))}
           </Grid>

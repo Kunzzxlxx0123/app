@@ -32,7 +32,7 @@ public class ProductController {
 	private Integer pageSize;
 
 	@GetMapping
-	public ResponseEntity<Page<Product>> getIndex(
+	public ResponseEntity<List<Product>> getIndex(
 			@RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
 			@RequestParam(name = "sort", required = false, defaultValue = "ASC") String sort){
 		
@@ -54,11 +54,11 @@ public class ProductController {
 		Pageable pageable = PageRequest.of(page, pageSize, sortable);
 		
 		try {
-			Page<Product> products =  productService.getPageProducts(pageable);
+			List<Product> products =  productService.getPageProducts(pageable);
 			return ResponseEntity.ok(products);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ResponseEntity<Page<Product>>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<List<Product>>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 	

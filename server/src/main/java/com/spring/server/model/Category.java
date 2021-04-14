@@ -5,8 +5,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -31,10 +33,11 @@ public class Category {
 	
 	
 	
-	@ManyToMany(mappedBy = "categories")
-	private Set<Product> products = new HashSet<Product>();
 	@Transient
-	private List<Category> childs = new ArrayList<Category>();
+	private Set<Product> products = new HashSet<Product>();
+	
+	@Transient
+	private List<Category> childs;
 	public Long getId() {
 		return id;
 	}
@@ -66,6 +69,14 @@ public class Category {
 	public void setChilds(List<Category> childs) {
 		this.childs = childs;
 		
+	}
+	
+	
+
+	public Category(Long pId, String name) {
+		super();
+		this.pId = pId;
+		this.name = name;
 	}
 
 	public Category(Long id, Long pId, String name) {

@@ -8,14 +8,18 @@ import {
     useHistory,
     useLocation
 } from "react-router-dom";
-import Home from './components/public/Home.js';
+import Home from './components/public/page/Home.js';
+import ProductDetail from './components/public/page/ProductDetail.js';
 
 const App = () => {
     return(
         <Router>
             <Switch>
-                <Route path="/">
+                <Route exact path="/">
                     <Home />
+                </Route>
+                <Route path="/product/:id" component={ProductDetail}>
+
                 </Route>
             </Switch>
         </Router>
